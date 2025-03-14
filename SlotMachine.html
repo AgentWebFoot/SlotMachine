@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+	<body>
+		<div id="top">
+			<p id="money"></p>
+			<p id="gameOver"></p>
+			<button id="button" class="button" onclick="play();">Play</button>
+			<p id="amountWon"></p>
+		</div>
+
+	</body>
+
+	<script>
+		function play() {
+			mainInstance.playAll();
+		}
+		
+		class SlotMachine {
+			constructor(index) {
+				this.amountWon = 0;
+				this.slots = [0, 0, 0];
+
+				this.img = [];
+				this.slotContainer = document.createElement('div');
+				this.slotContainer.id = `slot-machine-${index}`;
+
+				for (let i = 1; i <= 3; i++) {
+					const image = document.createElement('img');
+					image.src = "cherries.png";
+					image.alt = 0;
+					image.id = `img-${index}-${i}`;
+					image.width = 64;
+					image.height = 64;
+					this.img.push(image);
+					this.slotContainer.appendChild(image);
+				}
+
+				document.getElementById("SlotMachine").appendChild(this.slotContainer);
+			}
+
+			play() {
+				for (let i = 0; i < 3; i++) {
+					this.slots[i] = Math.floor(Math.random() * 7);
+				}
+
+				for (let i = 0; i < 3; i++) {
+					switch (this.slots[i]) {
+						case 0:
+							document.getElementById(this.img[i].id).src = "cherries.png";
+							this.img[i].alt = 0;
+							break;
+						case 1:
+							document.getElementById(this.img[i].id).src = "lemon.png";
+							this.img[i].alt = 1;
+							break;
+						case 2:
+							document.getElementById(this.img[i].id).src = "heart.png";
+							this.img[i].alt = 2;
+							break;
+						case 3:
+							document.getElementById(this.img[i].id).src = "bell.png";
+							this.img[i].alt = 3;
+							break;
+						case 4:
+							document.getElementById(this.img[i].id).src = "four_leaf_clover.png";
+							this.img[i].alt = 4;
+							break;
+						case 5:
+							document.getElementById(this.img[i].id).src = "gem.png";
+							this.img[i].alt = 5;
+							break;
+						case 6:
+							document.getElementById(this.img[i].id).src = "seven.png";
+							this.img[i].alt = 6;
+							break;
+					}
+				}
+
+				this.amountWon = 0;
+
+				if (this.slots[0] == 0) {
+					if (this.slots[1] == 0) {
+						if (this.slots[2] == 0) {
+							this.amountWon = 14;
+						} else {
+							this.amountWon = 3;
+						}
+					} else {
+						this.amountWon = 1;
+					}
+				} else if (this.slots[0] == this.slots[1]) {
+					if (this.slots[1] == this.slots[2]) {
+						this.amountWon = 7;
+					} else if (this.slots[2] != 0) {
+						this.amountWon = 2;
+					}
+				}
+				return this.amountWon;
+			}
+		}
+
+		class Main {
+			money = 0;
+			slotMachines = [];
+			numSlotMachines = 10;
+			
+			constructor() {
+				this.money = 100;
+				document.getElementById("money").textContent = "$" + this.money;
+				
+				this.slotMachineContainer = document.createElement('div');
+				this.slotMachineContainer.id = 'SlotMachine';
+				document.body.appendChild(this.slotMachineContainer);
+
+				for (let i = 0; i < this.numSlotMachines; i++) {
+					this.slotMachines.push(new SlotMachine(i));
+				}
+			}
+
+			playAll() {
+				if (this.money >= this.slotMachines.length) {
+					this.money -= this.slotMachines.length;
+					let earned = 0;
+
+					for (let i = 0; i < this.slotMachines.length; i++) {
+						earned += this.slotMachines[i].play();
+					}
+
+					this.money += earned;
+
+					document.getElementById("money").textContent = "$" + this.money;
+
+					if (earned > 0) {
+						document.getElementById("amountWon").textContent = "You Won: $" + earned;
+					} 
+					else {
+						document.getElementById("amountWon").textContent = "You Lose, Try Again";
+					}
+
+					if (this.money < this.slotMachines.length) {
+						document.getElementById("gameOver").textContent = "GAME OVER";
+					}
+				}
+			}
+		}
+
+		const mainInstance = new Main();
+	</script>
+</html>
